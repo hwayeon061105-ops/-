@@ -100,14 +100,16 @@ export default function Home() {
           />
         )}
 
-        {/* 개발용 상태 전환 스위처 */}
-        <button
-          type="button"
-          className="simulate-link"
-          onClick={() => setView(view === 'error' ? 'form' : 'error')}
-        >
-          개발용: {view === 'error' ? '폼으로 돌아가기' : '오류 상태 보기'}
-        </button>
+        {/* 개발 환경 전용 상태 전환 스위처 */}
+        {process.env.NODE_ENV === 'development' && (
+          <button
+            type="button"
+            className="simulate-link"
+            onClick={() => setView(view === 'error' ? 'form' : 'error')}
+          >
+            개발용: {view === 'error' ? '폼으로 돌아가기' : '오류 상태 보기'}
+          </button>
+        )}
       </div>
 
       <footer>

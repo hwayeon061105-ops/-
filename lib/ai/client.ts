@@ -67,7 +67,7 @@ function generateSmartMockAdvice(request: AdviceRequest): string[] {
 
   if (tone === 'spicy') {
     return [
-      `"${mind}"라고 주저할 시간에 170cm, 60kg 몸을 먼저 움직이세요!`,
+      `"${mind}"라고 주저할 시간에 ${height}cm, ${weight}kg 몸을 먼저 움직이세요!`,
       `누워서 고민만 한다고 달라지는 건 아무것도 없어요.`,
       `딱 10분만 땀 흘리고 다시 이야기해요, 지금 당장 일어나요! 🔥`,
     ]
