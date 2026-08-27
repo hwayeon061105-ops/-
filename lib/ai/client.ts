@@ -3,10 +3,10 @@ import { buildAdvicePrompt } from './prompts'
 import { formatToThreeLines, getRandomFallback } from './formatter'
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
-const DEFAULT_MODEL = 'gemini-1.5-flash'
+const CANDIDATE_MODELS = ['gemini-3.7-flash', 'gemini-3.6-flash']
 
 /**
- * Gemini API를 호출하여 운동 조언을 생성합니다.
+ * Gemini API를 호출하여 운동 조언을 생성합니다. (다중 모델 장애 복구 지원)
  */
 export async function generateWorkoutAdvice(request: AdviceRequest): Promise<string[]> {
   const apiKey =
@@ -17,50 +17,55 @@ export async function generateWorkoutAdvice(request: AdviceRequest): Promise<str
 
   // API 키가 없거나 개발용 모의 환경인 경우 스마트 생성 Fallback 제공
   if (!apiKey || apiKey.trim() === '' || apiKey === 'your_gemini_api_key_here') {
-    // 키, 몸무게, 마음가짐을 반영한 모의 응답 생성
     return generateSmartMockAdvice(request)
   }
 
   const prompt = buildAdvicePrompt(request)
-  const endpoint = `${GEMINI_API_BASE}/${DEFAULT_MODEL}:generateContent?key=${apiKey}`
 
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 8000) // 8초 타임아웃
+  // 다중 모델 순차 호출 (Failover Resilience - 각 3.5초 타임아웃)
+  for (const model of CANDIDATE_MODELS) {
+    const endpoint = `${GEMINI_API_BASE}/${model}:generateContent?key=${apiKey}`
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 3500) // 3.5초 타임아웃
 
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }],
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: prompt }],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1024,
           },
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 300,
-        },
-      }),
-      signal: controller.signal,
-    })
+        }),
+        signal: controller.signal,
+      })
 
-    clearTimeout(timeoutId)
+      clearTimeout(timeoutId)
 
-    if (!response.ok) {
-      throw new Error(`Gemini API Error: ${response.status} ${response.statusText}`)
+      if (response.ok) {
+        const data = await response.json()
+        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
+        if (rawText.trim()) {
+          return formatToThreeLines(rawText, request.tone)
+        }
+      } else {
+        console.warn(`[AI Client] Model ${model} returned status ${response.status}. Trying next model...`)
+      }
+    } catch (error) {
+      clearTimeout(timeoutId)
+      console.warn(`[AI Client] Model ${model} failed:`, error)
     }
-
-    const data = await response.json()
-    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
-
-    return formatToThreeLines(rawText, request.tone)
-  } catch (error) {
-    clearTimeout(timeoutId)
-    console.error('[AI Client] generateWorkoutAdvice error:', error)
-    // 에러 발생 시 3줄 기본 추천문 반환 (호출부에서 필요시 Catch 가능)
-    return formatToThreeLines('', request.tone)
   }
+
+  // 모든 Gemini 모델 호출 실패 시 스마트 내장 조언 생성기로 복구
+  console.warn('[AI Client] All Gemini models failed, falling back to smart engine.')
+  return generateSmartMockAdvice(request)
 }
 
 /**
