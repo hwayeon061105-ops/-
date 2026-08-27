@@ -48,21 +48,22 @@ gantt
 ---
 
 ### 🏃 Sprint 1: 아키텍처 구조화 & 입력 폼 및 검증 시스템
+> **상태:** ✅ 완료 (Completed)
 
 #### 1) 목표
 * 단일 파일에 집중되어 있던 코드를 역할별 모듈(컴포넌트, 훅, 유틸리티, 타입)로 분리하고, PRD에 명시된 엄격한 폼 검증과 입력 데이터 Sanitization을 구현한다.
 
 #### 2) 세부 작업 항목 (Tasks)
-- [ ] **Type & Model 정의 (`types/advice.ts`)**
+- [x] **Type & Model 정의 (`types/advice.ts`)**
   - 신체 정보(키, 몸무게), 마음가짐, 조언 톤(`spicy` | `realistic` | `warm`) 타입 정의
   - 요청/응답 페이로드 및 폼 에러 상태 타입 정의
-- [ ] **입력 데이터 Sanitization 유틸 (`lib/sanitize.ts`)**
+- [x] **입력 데이터 Sanitization 유틸 (`lib/sanitize.ts`)**
   - XSS 방지를 위한 HTML/스크립트 태그 이스케이프 및 공백 정규화 (PRD 예외규칙 #4)
-- [ ] **유효성 검증 시스템 구축 (`lib/validation.ts`)**
+- [x] **유효성 검증 시스템 구축 (`lib/validation.ts`)**
   - 필수값 누락 검사 (키, 몸무게, 마음가짐, 톤)
   - 미입력 필드별 구체적인 한글 에러 메시지 생성 (예: `"키 칸이 비어있어요"`, `"몸무게 칸이 비어있어요"`, `"현재 마음가짐 칸이 비어있어요"`) (PRD 예외규칙 #1)
   - 숫자 범위(키, 몸무게 양수 여부) 검증
-- [ ] **입력 폼 컴포넌트 분리 (`components/form/AdviceForm.tsx`, `Field.tsx`, `ToneSelector.tsx`)**
+- [x] **입력 폼 컴포넌트 분리 (`components/form/AdviceForm.tsx`, `Field.tsx`, `ToneSelector.tsx`)**
   - 키(cm), 몸무게(kg), 현재 마음가짐(textarea), 조언 톤 선택 라디오 그룹
   - 미입력 시 필드 하단 빨간색 경고 문구 실시간 및 제출 시 반영
   - Primary CTA 버튼 (`조언 받기`)
@@ -75,23 +76,24 @@ gantt
 ---
 
 ### 🤖 Sprint 2: AI 조언 생성 API & 프롬프트/포맷팅 파이프라인
+> **상태:** ✅ 완료 (Completed)
 
 #### 1) 목표
 * Next.js App Router 기반의 서버 API(`/api/advice`)를 구축하고, LLM을 연동하여 톤별 페르소나 프롬프트를 적용하고, 어떤 경우에도 **정확히 3줄 & 이모티콘 포함** 응답을 보장하는 파이프라인을 구축한다.
 
 #### 2) 세부 작업 항목 (Tasks)
-- [ ] **AI Provider 설정 (`lib/ai/client.ts`, `.env.local`)**
+- [x] **AI Provider 설정 (`lib/ai/client.ts`, `.env.local`)**
   - AI API Client (Google Gemini / OpenAI / Serverless API) 설정
   - API Key 환경 변수 분리 및 보안 처리
-- [ ] **톤별 프롬프트 엔지니어링 (`lib/ai/prompts.ts`)**
+- [x] **톤별 프롬프트 엔지니어링 (`lib/ai/prompts.ts`)**
   - **쓴소리 (Spicy):** 나태함을 깨우는 팩트 폭격 + 강렬한 이모티콘 (🔥, ⚡, 😤)
   - **현실직시 (Realistic):** 객관적 신체/상태 분석 + 실천 가능한 조언 (🏋️‍♂️, ⏱️, 📊)
   - **따뜻한 공감 (Warm):** 지친 마음 다독이기 + 포근한 격려 (🫂, 🌿, ✨)
   - **공통 제약:** 이모티콘/표정 특수문자 필수 포함, 정확히 3문장/3줄(`\n`) 출력
-- [ ] **3줄 보장 포맷터 & Validator (`lib/ai/formatter.ts`)**
+- [x] **3줄 보장 포맷터 & Validator (`lib/ai/formatter.ts`)**
   - AI 응답이 1~2줄이거나 4줄 이상일 경우 줄바꿈 기준 스마트 분할/통합 처리 (PRD 예외규칙 #3)
   - 이모티콘 누락 시 기본 톤별 이모티콘 자동 보정
-- [ ] **Route Handler 구현 (`app/api/advice/route.ts`)**
+- [x] **Route Handler 구현 (`app/api/advice/route.ts`)**
   - POST 요청 파싱, Sanitization 및 검증 수행
   - AI 요청 실패/타임아웃 핸들링 및 표준화된 에러 응답 반환
   - 5~10초 응답 시간 조율 (AI 처리 시간 + UX 애니메이션 타이밍 동기화)
@@ -104,25 +106,26 @@ gantt
 ---
 
 ### 🎨 Sprint 3: 상태 관리, 애니메이션 및 5대 예외 처리 완성
+> **상태:** ✅ 완료 (Completed)
 
 #### 1) 목표
 * 전체 뷰 상태머신(`form` | `loading` | `result` | `error`)을 정교화하고, 운동하는 캐릭터 로딩 애니메이션, 버튼 디바운싱, 재시도/초기화 플로우를 완성한다.
 
 #### 2) 세부 작업 항목 (Tasks)
-- [ ] **상태 관리 훅 (`hooks/useAdviceFlow.ts`)**
+- [x] **상태 관리 훅 (`hooks/useAdviceFlow.ts`)**
   - 상태 머신 관리 (`form` -> `loading` -> `result` / `error`)
   - 중복 제출 방지 (Debouncing & `isSubmitting` flag 활성화) (PRD 예외규칙 #5)
   - 입력값 유지 및 초기화(`reset`) 기능
-- [ ] **로딩 애니메이션 컴포넌트 (`components/loading/LoadingCard.tsx`)**
+- [x] **로딩 애니메이션 컴포넌트 (`components/loading/LoadingCard.tsx`)**
   - 운동하는 캐릭터 CSS 키프레임 애니메이션 (팔굽혀펴기/스쿼트/달리기 모션)
   - 롤링 로딩 문구 인터벌 노출 (`마음의 준비운동을 하는 중...`, `당신에게 딱 맞는 말을 고르는 중...` 등)
   - 로딩 중 '돌아가기' 네비게이션 제공
   - 5~10초 시간대 UX 보장
-- [ ] **결과 화면 컴포넌트 (`components/result/ResultCard.tsx`)**
+- [x] **결과 화면 컴포넌트 (`components/result/ResultCard.tsx`)**
   - 선택한 톤에 맞춘 테마 컬러 및 이모티콘 3줄 조언 카드
   - `다시 하기` 버튼 (폼 초기화 후 첫 화면 스크롤 포커스)
   - `원하는 느낌 나올 때까지 다시 생성` 버튼 (동일 조건 AI 재요청)
-- [ ] **에러 상태 및 Fallback UI (`components/error/ErrorCard.tsx`)**
+- [x] **에러 상태 및 Fallback UI (`components/error/ErrorCard.tsx`)**
   - API 에러 발생 시 `"조언을 불러오지 못했어요 😢"` 및 `다시 시도하기` 버튼 제공 (PRD 예외규칙 #2)
   - 새로고침 시 초기 화면으로 안전하게 리셋되는 동작 보장
 
