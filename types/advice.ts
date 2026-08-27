@@ -30,6 +30,7 @@ export interface AdviceRequest {
   weight: number
   mind: string
   tone: Tone
+  previousAdvice?: string[]
 }
 
 export interface AdviceResponse {

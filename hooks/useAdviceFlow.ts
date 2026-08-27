@@ -17,8 +17,9 @@ const LOADING_MESSAGES = [
   '움직일 에너지를 끌어모으는 중...',
 ]
 
-// PRD 1.2 및 4.2: 5~10초 사이 응답 UX 유지
-const MIN_LOADING_TIME_MS = 5000
+// PRD 1.2 및 4.2: 최초 생성 5초, 다시 생성 2초 UX 로딩 시간 유지
+const MIN_INITIAL_LOADING_TIME_MS = 5000
+const MIN_REGEN_LOADING_TIME_MS = 2000
 
 export function useAdviceFlow() {
   const [formData, setFormData] = useState<AdviceFormData>(INITIAL_FORM_DATA)
@@ -38,15 +39,15 @@ export function useAdviceFlow() {
 
     const interval = setInterval(() => {
       setLoadingMessageIndex((prev) => (prev + 1) % LOADING_MESSAGES.length)
-    }, 1200)
+    }, 1000)
 
     return () => clearInterval(interval)
   }, [view])
 
   /**
-   * AI 조언 API 요청 실행 (최소 5초 UX 로딩 시간 보장)
+   * AI 조언 API 요청 실행
    */
-  const executeAdviceFetch = useCallback(async (data: AdviceFormData) => {
+  const executeAdviceFetch = useCallback(async (data: AdviceFormData, isRegenerate = false) => {
     // 이전 요청 취소
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
@@ -60,6 +61,7 @@ export function useAdviceFlow() {
     setErrorMessage('')
 
     const startTime = Date.now()
+    const targetLoadingTime = isRegenerate ? MIN_REGEN_LOADING_TIME_MS : MIN_INITIAL_LOADING_TIME_MS
 
     try {
       const response = await fetch('/api/advice', {
@@ -70,6 +72,7 @@ export function useAdviceFlow() {
           weight: data.weight,
           mind: sanitizeInput(data.mind),
           tone: data.tone,
+          previousAdvice: isRegenerate ? adviceLines : undefined,
         }),
         signal: abortController.signal,
       })
@@ -81,9 +84,8 @@ export function useAdviceFlow() {
 
       const result: AdviceResponse = await response.json()
 
-      // 최소 5초 로딩 시간 확보하여 운동 캐릭터 애니메이션 노출 (PRD 4.2 준수)
       const elapsedTime = Date.now() - startTime
-      const remainingTime = Math.max(0, MIN_LOADING_TIME_MS - elapsedTime)
+      const remainingTime = Math.max(0, targetLoadingTime - elapsedTime)
 
       if (remainingTime > 0) {
         await new Promise((resolve) => setTimeout(resolve, remainingTime))
@@ -99,7 +101,7 @@ export function useAdviceFlow() {
       }
       console.error('[useAdviceFlow] Fetch error:', error)
       const elapsedTime = Date.now() - startTime
-      const remainingTime = Math.max(0, 3000 - elapsedTime)
+      const remainingTime = Math.max(0, 2000 - elapsedTime)
       await new Promise((resolve) => setTimeout(resolve, remainingTime))
 
       if (!abortController.signal.aborted) {
@@ -109,7 +111,7 @@ export function useAdviceFlow() {
     } finally {
       setIsSubmitting(false)
     }
-  }, [])
+  }, [adviceLines])
 
   /**
    * 폼 제출 핸들러 (유효성 검사 및 디바운싱)
@@ -125,17 +127,17 @@ export function useAdviceFlow() {
         return
       }
 
-      executeAdviceFetch(dataToSubmit)
+      executeAdviceFetch(dataToSubmit, false)
     },
     [isSubmitting, executeAdviceFetch]
   )
 
   /**
-   * '원하는 느낌 나올 때까지 다시 생성' 핸들러
+   * '원하는 느낌 나올 때까지 다시 생성' 핸들러 (이전 조언과 100% 다른 새 조언 요청)
    */
   const handleRegenerate = useCallback(() => {
     if (isSubmitting) return
-    executeAdviceFetch(formData)
+    executeAdviceFetch(formData, true)
   }, [isSubmitting, formData, executeAdviceFetch])
 
   /**

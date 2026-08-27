@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
       weight: Number(body.weight),
       mind: sanitizeInput(String(body.mind)),
       tone: ['spicy', 'realistic', 'warm'].includes(body.tone) ? body.tone : 'warm',
+      previousAdvice: Array.isArray(body.previousAdvice) ? body.previousAdvice : undefined,
     }
 
     // 3. AI 조언 생성
