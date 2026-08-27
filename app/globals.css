@@ -2,6 +2,322 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
+/* ============================================================
+   LOADING FULLSCREEN (lf-*)
+   ============================================================ */
+.loading-fullscreen {
+  min-height: 100dvh;
+  background: var(--background);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.lf-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 20px 0;
+  position: relative;
+}
+.lf-brand {
+  font: 700 11px/1 var(--font-space), monospace;
+  letter-spacing: .18em;
+  color: #b9c4d6;
+  flex: 1;
+}
+.lf-cancel {
+  border: 0;
+  background: rgba(255,255,255,0.06);
+  color: #8d98a7;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  transition: .15s;
+}
+.lf-cancel:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.lf-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 24px 48px;
+  gap: 0;
+}
+.lf-kicker {
+  margin: 28px 0 8px;
+  font: 600 10px/1 var(--font-space), monospace;
+  letter-spacing: .18em;
+  color: #ff8a70;
+  text-align: center;
+}
+.lf-title {
+  margin: 0 0 20px;
+  font-size: clamp(18px, 5vw, 22px);
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  letter-spacing: -.03em;
+}
+.lf-bar {
+  width: 120px;
+  height: 3px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.lf-bar span {
+  display: block;
+  width: 45%;
+  height: 100%;
+  background: var(--coral);
+  border-radius: 10px;
+  animation: load 1s infinite ease-in-out;
+}
+.lf-caption {
+  font-size: 12px;
+  color: #8a95a5;
+  text-align: center;
+  margin: 0;
+}
+
+/* Squat character */
+.squat-stage {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.squat-circle {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 107, 74, 0.25);
+  background: radial-gradient(circle, rgba(255,107,74,0.07) 0%, transparent 70%);
+  animation: squatCirclePulse 2.5s ease-in-out infinite;
+}
+.squat-circle-glow {
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  background: rgba(255,107,74,0.05);
+}
+.squat-svg {
+  width: 108px;
+  height: 108px;
+  position: relative;
+  z-index: 2;
+  animation: squatMotion 2.5s ease-in-out infinite;
+}
+
+/* 스쿼트 몸통 - 상하 이동 */
+.squat-body {
+  animation: squatBodyShift 2.5s ease-in-out infinite;
+  transform-origin: 60px 55px;
+}
+/* 바벨은 몸과 함께 이동 */
+.squat-barbell {
+  animation: squatBodyShift 2.5s ease-in-out infinite;
+  transform-origin: 60px 55px;
+}
+/* 다리 벌어졌다 모이는 애니메이션 */
+.squat-leg-l {
+  animation: squatLegL 2.5s ease-in-out infinite;
+  transform-origin: 57px 55px;
+}
+.squat-calf-l {
+  animation: squatCalfL 2.5s ease-in-out infinite;
+  transform-origin: 40px 78px;
+}
+.squat-leg-r {
+  animation: squatLegR 2.5s ease-in-out infinite;
+  transform-origin: 63px 55px;
+}
+.squat-calf-r {
+  animation: squatCalfR 2.5s ease-in-out infinite;
+  transform-origin: 80px 78px;
+}
+
+@keyframes squatCirclePulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.04); }
+}
+@keyframes squatMotion {
+  0%, 100% { transform: translateY(0); }
+  45%, 55% { transform: translateY(6px); }
+}
+@keyframes squatBodyShift {
+  0%, 100% { transform: translateY(0); }
+  45%, 55% { transform: translateY(8px); }
+}
+@keyframes squatLegL {
+  0%, 100% { transform: rotate(0deg);   }
+  45%, 55% { transform: rotate(-14deg); }
+}
+@keyframes squatCalfL {
+  0%, 100% { transform: rotate(0deg);  }
+  45%, 55% { transform: rotate(16deg); }
+}
+@keyframes squatLegR {
+  0%, 100% { transform: rotate(0deg);  }
+  45%, 55% { transform: rotate(14deg); }
+}
+@keyframes squatCalfR {
+  0%, 100% { transform: rotate(0deg);   }
+  45%, 55% { transform: rotate(-16deg); }
+}
+
+/* ============================================================
+   RESULT FULLSCREEN (rf-*)
+   ============================================================ */
+.result-fullscreen {
+  min-height: 100dvh;
+  background: var(--background);
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 32px;
+}
+.rf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 0;
+}
+.rf-brand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font: 700 11px/1 var(--font-space), monospace;
+  letter-spacing: .18em;
+  color: #b9c4d6;
+}
+.rf-close {
+  border: 0;
+  background: rgba(255,255,255,0.06);
+  color: #8d98a7;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: .15s;
+}
+.rf-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+.rf-hero {
+  padding: 32px 20px 20px;
+}
+.rf-kicker {
+  margin: 0 0 8px;
+  font: 600 10px/1 var(--font-space), monospace;
+  letter-spacing: .18em;
+  color: #ff8a70;
+}
+.rf-headline {
+  margin: 0;
+  font-size: clamp(30px, 8vw, 42px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.04em;
+  color: #fff;
+}
+.rf-headline span { color: var(--coral); }
+
+.rf-card {
+  margin: 0 16px;
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  padding: 18px;
+}
+.rf-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.rf-tone-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1.5px solid;
+  border-radius: 20px;
+  padding: 4px 10px;
+  font: 700 11px/1 var(--font-space), monospace;
+  letter-spacing: .04em;
+  background: transparent;
+}
+.rf-share {
+  border: 0;
+  background: rgba(255,255,255,0.06);
+  color: #8d98a7;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: .15s;
+}
+.rf-share:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+.rf-advice-body { display: flex; flex-direction: column; gap: 14px; }
+.rf-advice-line {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: #dae2fd;
+}
+
+.rf-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 16px 0;
+}
+.rf-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  background: var(--coral);
+  color: #fff;
+  padding: 16px;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 0 20px rgba(255,107,74,.30);
+  transition: .2s;
+}
+.rf-btn-primary:hover:not(:disabled) { background: #f05b3b; transform: translateY(-1px); }
+.rf-btn-primary:disabled { opacity: .55; }
+.rf-btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  color: #aab5c7;
+  padding: 15px;
+  font-weight: 700;
+  font-size: 14px;
+  transition: .2s;
+}
+.rf-btn-secondary:hover:not(:disabled) { background: rgba(255,255,255,0.07); color: #fff; }
+.rf-btn-secondary:disabled { opacity: .55; }
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
