@@ -9,10 +9,14 @@ const DEFAULT_MODEL = 'gemini-1.5-flash'
  * Gemini API를 호출하여 운동 조언을 생성합니다.
  */
 export async function generateWorkoutAdvice(request: AdviceRequest): Promise<string[]> {
-  const apiKey = process.env.GEMINI_API_KEY
+  const apiKey =
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_API_KEY ||
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY
 
   // API 키가 없거나 개발용 모의 환경인 경우 스마트 생성 Fallback 제공
-  if (!apiKey || apiKey === 'your_gemini_api_key_here') {
+  if (!apiKey || apiKey.trim() === '' || apiKey === 'your_gemini_api_key_here') {
     // 키, 몸무게, 마음가짐을 반영한 모의 응답 생성
     return generateSmartMockAdvice(request)
   }
